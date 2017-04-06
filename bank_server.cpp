@@ -31,11 +31,7 @@ int main(){
   vector<unordered_map<string, string>* >* transfers 
     = new vector<unordered_map<string, string>* >();
   
-  // all bank accounts
-  unordered_map<unsigned long, Account*>* accounts
-    = new unordered_map<unsigned long, Account*>();
-  
-  // create connection
+   // create connection
   connection* C = create_connection();
 
   // create tables
@@ -63,14 +59,13 @@ int main(){
     threadPara para_t;
     para_t.new_fd = new_fd;
     para_t.transfers = transfers;
-    para_t.accounts = accounts;
     para_t.ref_count = 0;
-    
+    para_t.C = C;
     requestThread((void*)(&para_t));
 
   }
   close_sock(&sockfd);
-  free(C);
+  free(transfers);
   delete C;
   return 0; 
 }

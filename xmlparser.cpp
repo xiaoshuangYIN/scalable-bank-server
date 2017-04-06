@@ -30,11 +30,9 @@ std::string get_reset(TiXmlElement* rootEle){
   if(rootEle->Attribute("reset")){
     if(std::string(rootEle->Attribute("reset")) == "true"){
       reset = "true";
-      printf("reset = true\n");
     }
     else if(std::string(rootEle->Attribute("reset")) == "false"){
       reset = "false";
-      printf("reset = true\n");
     }
     else{
       reset = "N/A";
@@ -127,4 +125,31 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   //printf("vector size: %lu\n", trans->size());
   return reset;
 }
+
+void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
+  TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
+  if(doc.LinkEndChild( decl )){
+    std::cerr << "add declaration fialed\n";
+  }
+}
+
+void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message){
+  TiXmlElement * element = new TiXmlElement(value.c_str());
+  if(message != ""){
+    TiXmlText * text = new TiXmlText(message.c_str());
+    element->LinkEndChild( text );
+  }
+  if(doc.LinkEndChild( element )){
+    std::cerr << "insert element to doc failed\n";
+  }
+}
+void insert_element_to_parent(TiXmlNode & parent, std::string value, std::string message ){
+  TiXmlElement * element = new TiXmlElement(value.c_str() );
+  TiXmlText * text = new TiXmlText(message.c_str());
+  element->LinkEndChild( text );
+  if(parent.LinkEndChild( element )){
+    std::cerr << "insert element to parent failed\n";
+  }
+}
+
 

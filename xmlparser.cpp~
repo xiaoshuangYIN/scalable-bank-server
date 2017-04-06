@@ -12,9 +12,9 @@ void add_to_map(TiXmlElement* child, std::unordered_map<std::string, std::string
 void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument& doc){
   TiXmlDeclaration* dec = doc.FirstChild()->ToDeclaration();
   if(dec){
-    dec_m["version"] = dec->Version();
-    dec_m["encoding"] = dec->Encoding();
-    dec_m["standalone"] = dec->Standalone();
+    dec_m["version"] = std::string(dec->Version());
+    dec_m["encoding"] = std::string(dec->Encoding());
+    dec_m["standalone"] = std::string(dec->Standalone());
     //printf("from get_dec : ver: %s\n",(*dec_t)->version);
     //printf("encod: %s\n",(*dec_t)->encoding);
     //printf("stan: %s\n",(*dec_t)->standalone);
@@ -30,11 +30,9 @@ std::string get_reset(TiXmlElement* rootEle){
   if(rootEle->Attribute("reset")){
     if(std::string(rootEle->Attribute("reset")) == "true"){
       reset = "true";
-      printf("reset = true\n");
     }
     else if(std::string(rootEle->Attribute("reset")) == "false"){
       reset = "false";
-      printf("reset = true\n");
     }
     else{
       reset = "N/A";
@@ -46,7 +44,7 @@ std::string get_reset(TiXmlElement* rootEle){
   return reset;
 }
 
-std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count){//, std::unordered_map<std::string, std::string>& dec){
+std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count, std::unordered_map<std::string, std::string>& dec){
   TiXmlDocument doc;
   TiXmlElement* tranEle = 0;
   TiXmlElement* rootEle = 0;
@@ -55,7 +53,7 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   rootEle = doc.RootElement();
  
   // dec
-  //get_dec(dec, doc);
+  get_dec(dec, doc);
 
   //printf("from parse ver: %s\n",(dec_t)->version);
   //printf("encod: %s\n",(dec_t)->encoding);
@@ -127,4 +125,31 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   //printf("vector size: %lu\n", trans->size());
   return reset;
 }
+
+void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
+  TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
+  if(doc.LinkEndChild( decl )){
+    std::cerr << "add declaration fialed\n";
+  }
+}
+
+void insert_to_doc(TiXmlDocument& doc, string value, string message){
+  TiXmlElement * element = new TiXmlElement(value.c_str());
+  if(message != ""){
+    TiXmlText * text = new TiXmlText(message.c_str());
+    element->LinkEndChild( text );
+  }
+  if(doc.LinkEndChild( element )){
+    std::cerr << "insert element to doc failed\n";
+  }
+}
+void insert_element_to_parent(TiXmlNode & parent, string value, string message ){
+  TiXmlElement * element = new TiXmlElement(value.c_str() );
+  TiXmlText * text = new TiXmlText(message.c_str());
+  element->LinkEndChild( text );
+  if(parent.LinkEndChild( element )){
+    std::cerr << "insert element to parent failed\n";
+  }
+}
+
 

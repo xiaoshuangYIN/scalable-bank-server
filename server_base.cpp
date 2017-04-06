@@ -1,5 +1,5 @@
 #include "server_base.h"
-#include "navigator.h"
+
 void set_socket(addrinfo* hints_p){
   memset(hints_p, 0, sizeof(*hints_p));
   hints_p->ai_family = AF_UNSPEC;
@@ -139,12 +139,32 @@ void* requestThread(void* para){
   /* parse */
   std::vector<std::unordered_map<std::string, std::string>* >* trans 
     = new std::vector<std::unordered_map<std::string, std::string >* >();
-  
   std::unordered_map<std::string, std::string> dec;
+  
   std::string reset = parse(buff, trans, para_t->transfers, para_t->ref_count, dec);
+  
+  /* reset or not */
+  if (reset == "true"){
+    printf("reset = true\n");
+    // clear account table
+    // clear transfer table
+    para_t->ref_count = 0;
+  }
+  else{
+    printf("reset = false\n");
+  }
 
+  /* write declaration to doc */
+  TiXmlDocument doc;
+  insert_declaration(dec, doc);
+  insert_to_doc(doc, std::string("results"), std::string(""));
+  
+  /* reponse file name */
+  const char* response_file = "xmlReponse1";
   /* handle request */
-  //bank(trans, connection);
+  bank(*trans, para_t->C, doc, std::string("results"));
+  doc.SaveFile(response_file);
+
   /* test */
   /*
   for(int i = 0; i < (*trans).size(); i++){

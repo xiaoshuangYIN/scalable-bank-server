@@ -40,7 +40,7 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
 }
 
 void bank(std::vector<std::unordered_map<std::string, std::string>* >& v_op, connection* C, TiXmlDocument& doc, std::string str){
-  TiXmlNode * results = doc.FirstChild(str.c_str() );
+  TiXmlNode * results = new doc.FirstChild(str.c_str() );
   int count = v_op.size();
   for(size_t i = 0; i < v_op.size();i++){
     navigator(*(v_op[i]), C, *results);
