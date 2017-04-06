@@ -1,0 +1,34 @@
+CC=g++
+CFLAGS=-std=c++11
+EXTRAFLAGS=-lpqxx -lpq
+
+all: bank_server
+
+bank_server: bank_server.o server_base.o account.h 
+	$(CC) $(CFLAGS) -o bank_server bank_server.o server_base.o 
+
+client: client.cpp
+	g++ -o client -Wall -Werror -std=c++11 client.cpp
+
+
+server_base.o : server_base.h server_base.cpp xmlparser.h
+
+%.o : %.cpp                                                                             
+	 ${CC} -c ${CFLAGS}  $< -o $@   
+
+account.o : account.h
+
+xmlparser.o : xmlparser.h
+tinyxml.o: tinyxml.h tinystr.h
+tinyxmlparser.o: tinyxml.h tinystr.h
+xmltest.o: tinyxml.h tinystr.h
+tinyxmlerror.o: tinyxml.h tinystr.h
+
+
+
+
+clean:
+	rm -f *~ *.o bank_server client
+
+clobber:
+	rm -f *~ *.o
