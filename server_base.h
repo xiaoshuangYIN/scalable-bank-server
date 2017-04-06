@@ -33,6 +33,8 @@ struct _threadPara {
 typedef struct _threadPara threadPara;
 
 
+
+
 void set_socket(addrinfo* hints_po);
 void *get_in_addr(struct sockaddr *sa);
 void bind_sock(struct addrinfo** servinfo, int* sockfd, int* yes);

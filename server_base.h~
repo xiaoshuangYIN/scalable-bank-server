@@ -21,7 +21,7 @@
 #define PORT "12345"  // the port users will be connecting to
 #define BACKLOG 10     // how many pending connections queue will hold
 
-//using namespace std;
+
 
 /** struct **/
 struct _threadPara {

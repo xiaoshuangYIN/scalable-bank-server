@@ -126,6 +126,7 @@ void recv_content(int* sockfd_p, char* buff_p, int len){
 }
 
 
+
 void* requestThread(void* para){
   threadPara* para_t = (threadPara*)para;
   int sockfd = para_t->new_fd;
@@ -139,9 +140,16 @@ void* requestThread(void* para){
   std::vector<std::unordered_map<std::string, std::string>* >* trans 
     = new std::vector<std::unordered_map<std::string, std::string >* >();
   
-  declaration dec_t;
-  std::string reset = parse(buff, trans, para_t->transfers, para_t->ref_count, dec_t);
+  //declaration dec_t;
 
+  std::unordered_map<std::string, std::string> dec;
+  std::string reset = parse(buff, trans, para_t->transfers, para_t->ref_count, dec);
+
+  printf("end: version: %s\n", dec["version"].c_str());
+  printf("encoding: %s\n", dec["encoding"].c_str());
+  printf("std: %s\n", dec["standalone"].c_str());
+
+  
   /* test */
   /*
   for(int i = 0; i < (*trans).size(); i++){

@@ -14,17 +14,17 @@
 //using namespace std;
 
 struct _declaration{
-  const char* version;
-  const char* encoding;
-  const char* standalone;
+  char* version;
+  char* encoding;
+  char* standalone;
 };
 typedef struct _declaration declaration;
-
 
 struct _transact{
   bool reset;
   std::vector<std::unordered_map<std::string, std::string> >* map_vec_p;
 };
 
+void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument& doc);
 
-std::string parse(char* buff, std::vector <std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfer, int ref_count, declaration& dec);
+std::string parse(char* buff, std::vector <std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfer, int ref_count, std::unordered_map<std::string, std::string>& dec);

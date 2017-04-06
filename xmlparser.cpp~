@@ -9,27 +9,32 @@ void add_to_map(TiXmlElement* child, std::unordered_map<std::string, std::string
   }
 }
 
-std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count, declaration& dec_t){
-  TiXmlDocument doc;
-  TiXmlElement* tranEle = 0;
-  TiXmlElement* rootEle = 0;
-  int count = 0;
-  doc.Parse(buff);
-  rootEle = doc.RootElement();
+void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument& doc){
   TiXmlDeclaration* dec = doc.FirstChild()->ToDeclaration();
   if(dec){
-    dec_t.version = dec->Version();
-    dec_t.encoding = dec->Encoding();
-    dec_t.standalone = dec->Standalone();
+    dec_m["version"] = dec->Version();
+    dec_m["encoding"] = dec->Encoding();
+    dec_m["standalone"] = dec->Standalone();
+    //printf("from get_dec : ver: %s\n",(*dec_t)->version);
+    //printf("encod: %s\n",(*dec_t)->encoding);
+    //printf("stan: %s\n",(*dec_t)->standalone);
   }
+  else{
+    printf("dec null\n");
+  }
+  return;
+}
+
+std::string get_reset(TiXmlElement* rootEle){
   std::string reset;
-  // reset
   if(rootEle->Attribute("reset")){
     if(std::string(rootEle->Attribute("reset")) == "true"){
       reset = "true";
+      printf("reset = true\n");
     }
     else if(std::string(rootEle->Attribute("reset")) == "false"){
       reset = "false";
+      printf("reset = true\n");
     }
     else{
       reset = "N/A";
@@ -38,11 +43,33 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   else{
     reset = "N/A";
   }
+  return reset;
+}
+
+std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count){//, std::unordered_map<std::string, std::string>& dec){
+  TiXmlDocument doc;
+  TiXmlElement* tranEle = 0;
+  TiXmlElement* rootEle = 0;
+  int count = 0;
+  doc.Parse(buff);
+  rootEle = doc.RootElement();
+ 
+  // dec
+  //get_dec(dec, doc);
+
+  //printf("from parse ver: %s\n",(dec_t)->version);
+  //printf("encod: %s\n",(dec_t)->encoding);
+  //printf("stan: %s\n",(dec_t)->standalone);
+ 
+  // reset
+  std::string reset = get_reset(rootEle);
+
+  // content
   for(tranEle = rootEle->FirstChildElement(); 
       tranEle;
       tranEle = tranEle->NextSiblingElement()){
     count++;
-    // map_p
+    // initialize map_p
     std::unordered_map<std::string, std::string>* map_p = new std::unordered_map<std::string, std::string>();
     // verb
     std::string verb = std::string(tranEle->Value());
@@ -82,7 +109,7 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
       }
       tags.pop_back();
       (*map_p)["tags"] = tags;
-      std::cout<< (*map_p)["tags"] << std::endl;
+      //std::cout<< (*map_p)["tags"] << std::endl;
       transfers->push_back(map_p);
     }
     else if(verb == "balance"){

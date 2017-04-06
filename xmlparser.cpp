@@ -9,21 +9,24 @@ void add_to_map(TiXmlElement* child, std::unordered_map<std::string, std::string
   }
 }
 
-std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count, declaration& dec_t){
-  TiXmlDocument doc;
-  TiXmlElement* tranEle = 0;
-  TiXmlElement* rootEle = 0;
-  int count = 0;
-  doc.Parse(buff);
-  rootEle = doc.RootElement();
+void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument& doc){
   TiXmlDeclaration* dec = doc.FirstChild()->ToDeclaration();
   if(dec){
-    dec_t.version = dec->Version();
-    dec_t.encoding = dec->Encoding();
-    dec_t.standalone = dec->Standalone();
+    dec_m["version"] = std::string(dec->Version());
+    dec_m["encoding"] = std::string(dec->Encoding());
+    dec_m["standalone"] = std::string(dec->Standalone());
+    //printf("from get_dec : ver: %s\n",(*dec_t)->version);
+    //printf("encod: %s\n",(*dec_t)->encoding);
+    //printf("stan: %s\n",(*dec_t)->standalone);
   }
+  else{
+    printf("dec null\n");
+  }
+  return;
+}
+
+std::string get_reset(TiXmlElement* rootEle){
   std::string reset;
-  // reset
   if(rootEle->Attribute("reset")){
     if(std::string(rootEle->Attribute("reset")) == "true"){
       reset = "true";
@@ -40,6 +43,26 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   else{
     reset = "N/A";
   }
+  return reset;
+}
+
+std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count, std::unordered_map<std::string, std::string>& dec){
+  TiXmlDocument doc;
+  TiXmlElement* tranEle = 0;
+  TiXmlElement* rootEle = 0;
+  int count = 0;
+  doc.Parse(buff);
+  rootEle = doc.RootElement();
+ 
+  // dec
+  get_dec(dec, doc);
+
+  //printf("from parse ver: %s\n",(dec_t)->version);
+  //printf("encod: %s\n",(dec_t)->encoding);
+  //printf("stan: %s\n",(dec_t)->standalone);
+ 
+  // reset
+  std::string reset = get_reset(rootEle);
 
   // content
   for(tranEle = rootEle->FirstChildElement(); 
