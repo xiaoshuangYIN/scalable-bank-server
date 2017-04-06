@@ -1,0 +1,15 @@
+CC=g++
+CFLAGS=-std=c++11
+EXTRAFLAGS=-lpqxx -lpq
+
+all: test
+
+test: main.cpp navigator.h navigator.cpp bank.h bank.cpp psql.cpp
+        $(CC) $(CFLAGS) -o test main.cpp navigator.h navigator.cpp bank.cpp psql.cpp $(EXTRAFLAGS)
+
+clean:
+        rm -f *~ *.o test
+
+clobber:
+        rm -f *~ *.o
+

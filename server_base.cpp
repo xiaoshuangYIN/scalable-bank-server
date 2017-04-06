@@ -1,5 +1,5 @@
 #include "server_base.h"
-
+#include "navigator.h"
 void set_socket(addrinfo* hints_p){
   memset(hints_p, 0, sizeof(*hints_p));
   hints_p->ai_family = AF_UNSPEC;
@@ -140,16 +140,11 @@ void* requestThread(void* para){
   std::vector<std::unordered_map<std::string, std::string>* >* trans 
     = new std::vector<std::unordered_map<std::string, std::string >* >();
   
-  //declaration dec_t;
-
   std::unordered_map<std::string, std::string> dec;
   std::string reset = parse(buff, trans, para_t->transfers, para_t->ref_count, dec);
 
-  printf("end: version: %s\n", dec["version"].c_str());
-  printf("encoding: %s\n", dec["encoding"].c_str());
-  printf("std: %s\n", dec["standalone"].c_str());
-
-  
+  /* handle request */
+  //bank(trans, connection);
   /* test */
   /*
   for(int i = 0; i < (*trans).size(); i++){

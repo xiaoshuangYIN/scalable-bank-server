@@ -1,5 +1,5 @@
 #include "server_base.h" // all the server socket funcs
-
+#include "psql.h"
 using namespace std;
 
 
@@ -35,6 +35,13 @@ int main(){
   unordered_map<unsigned long, Account*>* accounts
     = new unordered_map<unsigned long, Account*>();
   
+  // create connection
+  connection* C = create_connection();
+
+  // create tables
+  create_tables(C);
+  
+  // network
   set_socket(&hints);
   
   get_addr_info(&hints, &servinfo, &rv);
@@ -63,5 +70,7 @@ int main(){
 
   }
   close_sock(&sockfd);
+  free(C);
+  delete C;
   return 0; 
 }

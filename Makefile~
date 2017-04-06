@@ -1,38 +1,15 @@
 CC=g++
 CFLAGS=-std=c++11
 EXTRAFLAGS=-lpqxx -lpq
-W=-Wall -Werror
 
-all: bank_server
+all: server
 
-client: client.cpp
-	$(CC) $(W) $(CFLAGS) client.cpp -o client
-
-
-SRCS := ./tinyxml/tinyxml.cpp ./tinyxml/tinyxmlparser.cpp ./tinyxml/server.cpp ./tinyxml/tinyxmlerror.cpp ./tinyxml/tinystr.cpp xmlparser.cpp server_base.cpp bank_server.cpp
-
-SRCS := ${SRCS}
-
-OBJS := $(addsuffix .o,$(basename ${SRCS}))
-
-bank_server: ${OBJS} 
-	${CC} -o $@ ${OBJS}
-
-
-%.o : %.cpp                                                                             
-	 ${CC} -c ${CFLAGS}  $< -o $@   
-
-account.o : account.h
-./tinyxml/tinyxml.o: ./tinyxml/tinyxml.h ./tinyxml/tinystr.h
-./tinyxml/tinyxmlparser.o: ./tinyxml/tinyxml.h ./tinyxml/tinystr.h
-./tinyxml/xmltest.o: ./tinyxml/tinyxml.h ./tinyxml/tinystr.h
-./tinyxml/tinyxmlerror.o: ./tinyxml/tinyxml.h ./tinyxml/tinystr.h
-
-
-
+server: bank_server.cpp server_base.cpp server_base.h xmlparser.cpp xmlparser.h navigator.h navigator.cpp bank.h bank.cpp psql.cpp psql.h ./tinyxml/tinyxml.cpp ./tinyxml/tinyxmlparser.cpp ./tinyxml/tinyxmlerror.cpp ./tinyxml/tinystr.cpp ./tinyxml/tinyxml.h ./tinyxml/tinystr.h
+	$(CC) $(CFLAGS) -o server bank_server.cpp server_base.cpp xmlparser.c navigator.cpp bank.cpp psql.cpp  ./tinyxml/tinyxml.cpp ./tinyxml/tinyxmlparser.cpp ./tinyxml/tinyxmlerror.cpp ./tinyxml/tinystr.cpp $(EXTRAFLAGS)
 
 clean:
-	rm -f *~ *.o bank_server client
+	rm -f *~ *.o server
 
 clobber:
 	rm -f *~ *.o
+
