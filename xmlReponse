@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<results>
+    <success ref="c1">created</success>
+    <success ref="c2">created</success>
+    <success ref="c3">created</success>
+    <success ref="c4">created</success>
+    <success ref="1">transferred</success>
+    <success ref="2">transferred</success>
+    <success ref="3">transferred</success>
+    <success ref="xyz">9622.330000</success>
+</results>

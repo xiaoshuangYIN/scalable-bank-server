@@ -125,6 +125,27 @@ void recv_content(int* sockfd_p, char* buff_p, int len){
   return;
 }
 
+uint64_t*  write_response_buffer(uint64_t len_rep, char* content){
+  // convert to network byte order
+  uint64_t len_big_endien = htonll(len_rep);
+  
+  // add 64bits int in front of the char array
+  uint64_t* msg = (uint64_t*)malloc(8 + len_rep);
+  
+  memcpy(msg, &len_big_endien, sizeof(len_big_endien));
+  
+  // copy the content after the int
+  char* msg_str_p = (char*)(msg + 1);
+  
+  memcpy(msg_str_p, content, len_rep);
+ 
+  return msg;
+}
+
+void send_sock(int sockfd, uint64_t* msg, int len){
+  int write_bytes = write(sockfd, (const void*)msg, 8+len);
+  printf("len send: '%d'\n",write_bytes);
+}
 
 
 void* requestThread(void* para){
@@ -137,37 +158,20 @@ void* requestThread(void* para){
   recv_content(&sockfd, buff, len);
   
   /* parse */
-  //  std::unordered_map<std::string, std::string> dec;
-  std::string reset = parse(buff, para_t->ref_count, para_t->C);
+  int len_rep;
+  char* xml_str = parse(buff, para_t->ref_count, para_t->C, &len_rep);
+  printf(" %s \n", xml_str);
+
+
+  /* send the xml file to client*/
+  uint64_t* msg = write_response_buffer(len_rep, xml_str);
   
-  /* reset or not */
-  if (reset == "true"){
-    printf("reset = true\n");
-    // clear account table
-    // clear transfer table
-    para_t->ref_count = 0;
-  }
-  else{
-    printf("reset = false\n");
-  }
-
-  /* write declaration to doc */
-  //TiXmlDocument doc;
-  //insert_declaration(dec, doc);
-  //insert_to_doc(doc, std::string("results"), std::string(""));
   
-  /* reponse file name */
-  //const char* response_file = "xmlResponse1";
-
-  /* handle request */
-  //bank(*trans, para_t->C, doc, std::string("results"));
-  //doc.SaveFile(response_file);
-
-  /* test */
-  /*
-  for(int i = 0; i < (*trans).size(); i++){
-    std::cout<< (*(*trans)[i])["verb"] << std::endl;
-  }
-  */
+  // send
+  send_sock(sockfd, msg, len_rep);
+  
+  /// free
+  free(msg);
+  free(xml_str);
   return 0;
 }

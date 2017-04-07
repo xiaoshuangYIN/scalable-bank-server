@@ -48,3 +48,5 @@ void* requestThread(void* para);
 void recv_content(int* sockfd_p, char* buff_p, int len);
 uint64_t recv_size_byte(int* sockfd_p);
 int accept_sock(int sockfd_p, struct sockaddr_storage their_addr_p);
+uint64_t*  write_response_buffer(uint64_t len_rep, char* content);
+void send_sock(int sockfd, uint64_t* msg);

@@ -1,5 +1,22 @@
 #include "xmlParser.h"
 
+std::string readXML(const char* filename){
+  std::stringstream ss;
+  std::string line;
+  std::ifstream file(filename);
+  if(file.is_open()){
+    while(std::getline(file, line)){
+      line.push_back('\n');
+      ss << line;
+    }
+  }
+  else{
+    fprintf(stderr,"Server: Can not open file\n");
+    exit(1);
+  }
+  return ss.str();
+}
+
 void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
   TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
   doc.LinkEndChild( decl );
@@ -74,16 +91,42 @@ void write_xml_response(TiXmlNode& parent, bool result, std::string res, std::un
   }
 }
 
-void parse_query(TiXmlElement* tranEle){
-  if(tranEle){
-    
-  }
-  else{
-    // end
-  }
+/*
+void parse_query(TiXmlElement* parent){
+  
+  TiXmlElement* tranEle;
+  
+  if(parent){
+  
+    for(tranEle = parent->FirstChildElement(); 
+	 tranEle;
+	 tranEle = parent->NextSiblingElement()){
+       
+      if(std::string(tranEle->Value()) == "and"){
+	 parse_query(tranEle);
+	 printf("and\n");
+       }
+      else if(std::string(tranEle->Value()) == "or"){
+	 parse_query(tranEle);
+	 printf("or\n");
+       }
+      else if(std::string(tranEle->Value()) == "not"){
+	 parse_query(tranEle);
+	 printf("not\n");
+       }
+      else if(std::string(tranEle->Value()) == "greater" || std::string(tranEle->Value()) == "less" || std::string(tranEle->Value()) == "equals"){
+	 printf("greater/less/equals\n");
+      }
+      else if(std::string(tranEle->Value()) == "tag"){
+      	 printf("tag\n");
+      }
+     }
+  } // end if
+  
+  return;
 }
-
-std::string parse(char* buff, int ref_count, pqxx::connection* C, const char* fileName){
+*/
+char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   // request doc
   TiXmlDocument doc;
   TiXmlElement* tranEle = 0;
@@ -174,7 +217,7 @@ std::string parse(char* buff, int ref_count, pqxx::connection* C, const char* fi
 
     // query
     else if(verb == "query"){
-      parse_query(tranEle);
+      //parse_query(tranEle);
       // use it's own write to xml func
       continue;
     }
@@ -192,9 +235,17 @@ std::string parse(char* buff, int ref_count, pqxx::connection* C, const char* fi
       write_xml_response(*results, result, res, map);
     }
   }
-  // save xml to file
-  rep_doc.SaveFile(fileName);
-  return reset;
+  
+
+  // write xml to memory buffer
+  TiXmlPrinter printer;
+  printer.SetIndent( "\t" );
+  rep_doc.Accept( &printer );
+  *len = printer.Size();
+  char* xml_rep = (char*) malloc((*len) * sizeof(char));
+  memcpy(xml_rep, printer.CStr(), (*len));
+  printf("xml parser: size = %d\n", *len);
+  return xml_rep;
 }
 
 

@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
   uint64_t len_rep = ntohll(*len_p_rep);
-  printf("client: reponse size =  '%llu'\n", len_rep);
+  printf("server: received '%llu'\n", len_rep);
   free(len_p_rep);
 
   
