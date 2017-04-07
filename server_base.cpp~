@@ -152,16 +152,16 @@ void* requestThread(void* para){
   }
 
   /* write declaration to doc */
-  TiXmlDocument doc;
-  insert_declaration(dec, doc);
-  insert_to_doc(doc, std::string("results"), std::string(""));
+  //TiXmlDocument doc;
+  //insert_declaration(dec, doc);
+  //insert_to_doc(doc, std::string("results"), std::string(""));
   
   /* reponse file name */
-  const char* response_file = "xmlResponse1";
+  //const char* response_file = "xmlResponse1";
 
   /* handle request */
   //bank(*trans, para_t->C, doc, std::string("results"));
-  doc.SaveFile(response_file);
+  //doc.SaveFile(response_file);
 
   /* test */
   /*

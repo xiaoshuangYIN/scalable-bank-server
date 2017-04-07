@@ -8,5 +8,4 @@
     <success ref="2">transferred</success>
     <success ref="3">transferred</success>
     <success ref="xyz">9622.330000</success>
-    <error ref="4"></error>
 </results>

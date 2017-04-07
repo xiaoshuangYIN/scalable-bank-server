@@ -60,7 +60,6 @@ int main(){
 
   }
   close_sock(&sockfd);
-  free(transfers);
   delete C;
   return 0; 
 }

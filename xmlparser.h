@@ -31,4 +31,4 @@ void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXml
 void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message);
 void insert_element_to_parent( TiXmlNode& parent, std::string value, std::string message, std::string ref);
 
-std::string parse(char* buff, int ref_count, pqxx::connection* C);
+std::string parse(char* buff, int ref_count, pqxx::connection* C, const char* filename);

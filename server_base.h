@@ -30,6 +30,7 @@ struct _threadPara {
   int new_fd;
   int ref_count;
   connection* C; 
+  const char* file;
 };
 typedef struct _threadPara threadPara;
 

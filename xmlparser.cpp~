@@ -74,6 +74,15 @@ void write_xml_response(TiXmlNode& parent, bool result, std::string res, std::un
   }
 }
 
+void parse_query(TiXmlElement* tranEle){
+  if(tranEle){
+    
+  }
+  else{
+    // end
+  }
+}
+
 std::string parse(char* buff, int ref_count, pqxx::connection* C){
   // request doc
   TiXmlDocument doc;
@@ -89,7 +98,7 @@ std::string parse(char* buff, int ref_count, pqxx::connection* C){
   doc.Parse(buff);
   rootEle = doc.RootElement();
  
-  // dec
+  // declaration
   std::unordered_map<std::string, std::string> dec;
   get_dec(dec, doc);
   insert_declaration(dec, rep_doc);
@@ -165,11 +174,16 @@ std::string parse(char* buff, int ref_count, pqxx::connection* C){
 
     // query
     else if(verb == "query"){
-      std::cout << "query" << std::endl;
+      parse_query(tranEle);
+      // use it's own write to xml func
+      continue;
     }
 
+    // invliad verb
     else{
       std::cout<<"undefine transaction"<< std::endl;
+      result = false;
+      res = "invalid transaction";
     }
     
     // write respose
@@ -179,7 +193,7 @@ std::string parse(char* buff, int ref_count, pqxx::connection* C){
     }
   }
   // save xml to file
-  rep_doc.save("xmlResponse1");
+  rep_doc.SaveFile("xmlResponse1");
   return reset;
 }
 

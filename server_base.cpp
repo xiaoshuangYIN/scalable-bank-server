@@ -138,7 +138,7 @@ void* requestThread(void* para){
   
   /* parse */
   //  std::unordered_map<std::string, std::string> dec;
-  std::string reset = parse(buff, para_t->ref_count, para_t->C);
+  std::string reset = parse(buff, para_t->ref_count, para_t->C, para_t->file);
   
   /* reset or not */
   if (reset == "true"){
