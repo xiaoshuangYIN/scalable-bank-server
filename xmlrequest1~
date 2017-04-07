@@ -16,7 +16,7 @@
     <balance>5000000</balance>
   </create>
   <transfer ref="1">
-    <to>1224</to>
+    <to>1234</to>
     <from>1000</from>
     <amount>9568.34</amount>
     <tag>paycheck</tag>
@@ -37,7 +37,7 @@
   <balance ref="xyz">
     <account>1234</account>
   </balance>
-  <query ref="4">
+  <query>
     <or>
       <equals from="1234"/>
       <equals to="5678"/>

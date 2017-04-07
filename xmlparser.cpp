@@ -54,10 +54,6 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
  
   // dec
   get_dec(dec, doc);
-
-  //printf("from parse ver: %s\n",(dec_t)->version);
-  //printf("encod: %s\n",(dec_t)->encoding);
-  //printf("stan: %s\n",(dec_t)->standalone);
  
   // reset
   std::string reset = get_reset(rootEle);
@@ -128,9 +124,7 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
 
 void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
   TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
-  if(doc.LinkEndChild( decl )){
-    std::cerr << "add declaration fialed\n";
-  }
+  doc.LinkEndChild( decl );
 }
 
 void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message){
@@ -139,17 +133,15 @@ void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message){
     TiXmlText * text = new TiXmlText(message.c_str());
     element->LinkEndChild( text );
   }
-  if(doc.LinkEndChild( element )){
-    std::cerr << "insert element to doc failed\n";
-  }
+  doc.LinkEndChild( element );
 }
-void insert_element_to_parent(TiXmlNode & parent, std::string value, std::string message ){
+
+void insert_element_to_parent(TiXmlNode & parent, std::string value, std::string message, std::string ref){
   TiXmlElement * element = new TiXmlElement(value.c_str() );
+  element->SetAttribute("ref", ref.c_str());
   TiXmlText * text = new TiXmlText(message.c_str());
   element->LinkEndChild( text );
-  if(parent.LinkEndChild( element )){
-    std::cerr << "insert element to parent failed\n";
-  }
+  parent.LinkEndChild( element );
 }
 
 

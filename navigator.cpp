@@ -15,9 +15,10 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
     }
     else if(it->second == "transfer"){
       result = transfer(C, table, res);
+      std::cout << "transfer result: " << result  << std::endl;
     }
     else if(it->second == "query"){
-      std::cout << "query " << std::endl;
+      std::cout << "query result: " << result  << std::endl;
     }
     else if(it->second == "balance"){
       result = balance(C, table, res);
@@ -28,13 +29,13 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
   }
 
   // write respose
-  if(result){
-    std::cout<<"*******end " << res << std::endl;
-    insert_element_to_parent(results, std::string("success"), res);
+  if(result == true){
+    std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(results, std::string("success"), res, table["ref"]);
   }
-  else{
-    std::cout<<"*******end " << res << std::endl;
-    insert_element_to_parent(results, std::string("error"), res);
+  else {
+    std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(results, std::string("error"), res, table["ref"]);
   }
   return;
 }

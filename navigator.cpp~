@@ -15,9 +15,10 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
     }
     else if(it->second == "transfer"){
       result = transfer(C, table, res);
+      std::cout << "transfer result: " << result  << std::endl;
     }
     else if(it->second == "query"){
-      std::cout << "query " << std::endl;
+      std::cout << "query result: " << result  << std::endl;
     }
     else if(it->second == "balance"){
       result = balance(C, table, res);
@@ -28,19 +29,19 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
   }
 
   // write respose
-  if(result){
-    std::cout<<"*******end " << res << std::endl;
-    insert_element_to_parent(results, std::string("success"), res);
+  if(result == true){
+    std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(results, std::string("success"), res, table["ref"]);
   }
-  else{
-    std::cout<<"*******end " << res << std::endl;
-    insert_element_to_parent(results, std::string("error"), res);
+  else if(result == false){
+    std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(results, std::string("error"), res, table["ref"]);
   }
   return;
 }
 
 void bank(std::vector<std::unordered_map<std::string, std::string>* >& v_op, connection* C, TiXmlDocument& doc, std::string str){
-  TiXmlNode * results = new doc.FirstChild(str.c_str() );
+  TiXmlNode * results = doc.FirstChild(str.c_str() );
   int count = v_op.size();
   for(size_t i = 0; i < v_op.size();i++){
     navigator(*(v_op[i]), C, *results);

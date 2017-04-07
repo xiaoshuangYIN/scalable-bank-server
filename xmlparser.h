@@ -30,4 +30,4 @@ void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument&
 std::string parse(char* buff, std::vector <std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfer, int ref_count, std::unordered_map<std::string, std::string>& dec);
 void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc);
 void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message);
-void insert_element_to_parent( TiXmlNode& parent, std::string value, std::string message);
+void insert_element_to_parent( TiXmlNode& parent, std::string value, std::string message, std::string ref);

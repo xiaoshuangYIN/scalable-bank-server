@@ -160,7 +160,8 @@ void* requestThread(void* para){
   insert_to_doc(doc, std::string("results"), std::string(""));
   
   /* reponse file name */
-  const char* response_file = "xmlReponse1";
+  const char* response_file = "xmlResponse1";
+
   /* handle request */
   bank(*trans, para_t->C, doc, std::string("results"));
   doc.SaveFile(response_file);
