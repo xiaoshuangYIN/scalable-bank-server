@@ -1,5 +1,27 @@
 #include "xmlParser.h"
 
+void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
+  TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
+  doc.LinkEndChild( decl );
+}
+
+void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message){
+  TiXmlElement * element = new TiXmlElement(value.c_str());
+  if(message != ""){
+    TiXmlText * text = new TiXmlText(message.c_str());
+    element->LinkEndChild( text );
+  }
+  doc.LinkEndChild( element );
+}
+
+void insert_element_to_parent(TiXmlNode & parent, std::string value, std::string message, std::string ref){
+  TiXmlElement * element = new TiXmlElement(value.c_str() );
+  element->SetAttribute("ref", ref.c_str());
+  TiXmlText * text = new TiXmlText(message.c_str());
+  element->LinkEndChild( text );
+  parent.LinkEndChild( element );
+}
+
 void add_to_map(TiXmlElement* child, std::unordered_map<std::string, std::string>* map_p, std::string key){
   if(child && child->GetText()){
     (*map_p)[key] = std::string(child->GetText());
@@ -15,9 +37,6 @@ void get_dec(std::unordered_map<std::string, std::string>& dec_m, TiXmlDocument&
     dec_m["version"] = std::string(dec->Version());
     dec_m["encoding"] = std::string(dec->Encoding());
     dec_m["standalone"] = std::string(dec->Standalone());
-    //printf("from get_dec : ver: %s\n",(*dec_t)->version);
-    //printf("encod: %s\n",(*dec_t)->encoding);
-    //printf("stan: %s\n",(*dec_t)->standalone);
   }
   else{
     printf("dec null\n");
@@ -44,17 +63,38 @@ std::string get_reset(TiXmlElement* rootEle){
   return reset;
 }
 
-std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::string>* >* trans, std::vector<std::unordered_map<std::string, std::string>* >* transfers, int ref_count, std::unordered_map<std::string, std::string>& dec){
+void write_xml_response(TiXmlNode& parent, bool result, std::string res, std::unordered_map<std::string, std::string>& map){
+  if(result == true){
+    std::cout<<"******* ref =  " << map["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(parent, std::string("success"), res, map["ref"]);
+    }
+  else {
+    std::cout<<"******* ref =  " << map["ref"] << " : " << res << std::endl;
+    insert_element_to_parent(parent, std::string("error"), res, map["ref"]);
+  }
+}
+
+std::string parse(char* buff, int ref_count, pqxx::connection* C){
+  // request doc
   TiXmlDocument doc;
   TiXmlElement* tranEle = 0;
   TiXmlElement* rootEle = 0;
   int count = 0;
+
+  // resposne doc
+  TiXmlDocument rep_doc;
+
+  
+  // put the str in the parser
   doc.Parse(buff);
   rootEle = doc.RootElement();
  
   // dec
+  std::unordered_map<std::string, std::string> dec;
   get_dec(dec, doc);
- 
+  insert_declaration(dec, rep_doc);
+  insert_to_doc(rep_doc, std::string("results"), std::string(""));
+  
   // reset
   std::string reset = get_reset(rootEle);
 
@@ -62,36 +102,46 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
   for(tranEle = rootEle->FirstChildElement(); 
       tranEle;
       tranEle = tranEle->NextSiblingElement()){
+  
     count++;
-    // initialize map_p
-    std::unordered_map<std::string, std::string>* map_p = new std::unordered_map<std::string, std::string>();
+
+    // initialize map_p, res, result
+    std::unordered_map<std::string, std::string> map;
+    bool result = false;
+    std::string res("");
+    
     // verb
     std::string verb = std::string(tranEle->Value());
-    (*map_p)["verb"] = verb;    
+    map["verb"] = verb;    
+
     // ref
     if(tranEle->Attribute("ref")){
-      (*map_p)["ref"] = std::string(tranEle->Attribute("ref"));
+      map["ref"] = std::string(tranEle->Attribute("ref"));
     }
     else{
       std::string reff = "given" + std::to_string(ref_count);
       ref_count++;
-      (*map_p)["ref"] = reff;
+      map["ref"] = reff;
     }
-    // account number
+
+    // create
     if(verb == "create"){
       TiXmlElement* child = tranEle->FirstChildElement("account");
-      add_to_map(child, map_p, "account");
+      add_to_map(child, &map, "account");
       child = tranEle->FirstChildElement("balance");
-      add_to_map(child, map_p, "balance");
-      (*map_p)["finished"] = "0";
+      add_to_map(child, &map, "balance");
+      map["finished"] = "0";
+      result = create(C, map, res);
     }
+
+    // transfer
     else if(verb == "transfer"){
       TiXmlElement* child = tranEle->FirstChildElement("to");
-      add_to_map(child, map_p, "to");
+      add_to_map(child, &map, "to");
       child = tranEle->FirstChildElement("from");
-      add_to_map(child, map_p, "from");
+      add_to_map(child, &map, "from");
       child = tranEle->FirstChildElement("amount");
-      add_to_map(child, map_p, "amount");
+      add_to_map(child, &map, "amount");
       std::string tags;
       for(TiXmlElement* tag = tranEle->FirstChildElement("tag");
 	  tag;
@@ -102,45 +152,36 @@ std::string parse(char* buff, std::vector<std::unordered_map<std::string, std::s
 	}
       }
       tags.pop_back();
-      (*map_p)["tags"] = tags;
-      //std::cout<< (*map_p)["tags"] << std::endl;
-      transfers->push_back(map_p);
+      map["tags"] = tags;
+      result = transfer(C, map, res);
     }
+
+    // balance
     else if(verb == "balance"){
       TiXmlElement* child = tranEle->FirstChildElement("account");
-      add_to_map(child, map_p, "account");
+      add_to_map(child, &map, "account");
+      result = balance(C, map, res);
     }
+
+    // query
     else if(verb == "query"){
       std::cout << "query" << std::endl;
     }
+
     else{
       std::cout<<"undefine transaction"<< std::endl;
     }
-    trans->push_back(map_p);
+    
+    // write respose
+    TiXmlNode * results = rep_doc.FirstChild("results");
+    if(results){
+      write_xml_response(*results, result, res, map);
+    }
   }
-  //printf("vector size: %lu\n", trans->size());
+  // save xml to file
+  rep_doc.save("xmlResponse1");
   return reset;
 }
 
-void insert_declaration(std::unordered_map<std::string, std::string>& dec, TiXmlDocument& doc){
-  TiXmlDeclaration * decl = new TiXmlDeclaration(dec["version"].c_str(), dec["encoding"].c_str(), dec["standalone"].c_str());
-  doc.LinkEndChild( decl );
-}
-
-void insert_to_doc(TiXmlDocument& doc, std::string value, std::string message){
-  TiXmlElement * element = new TiXmlElement(value.c_str());
-  if(message != ""){
-    TiXmlText * text = new TiXmlText(message.c_str());
-    element->LinkEndChild( text );
-  }
-  doc.LinkEndChild( element );
-}
-
-void insert_element_to_parent(TiXmlNode & parent, std::string value, std::string message ){
-  TiXmlElement * element = new TiXmlElement(value.c_str() );
-  TiXmlText * text = new TiXmlText(message.c_str());
-  element->LinkEndChild( text );
-  parent.LinkEndChild( element );
-}
 
 

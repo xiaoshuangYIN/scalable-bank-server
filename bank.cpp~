@@ -195,8 +195,8 @@ bool transfer(connection *C, std::unordered_map<std::string, std::string> & t, s
     }else{
       std::string::size_type sz;
       double amount = std::stod(str_bal, &sz);
-      unsigned long acc_from = std::stoul(str_from, nullptr,10);
-      unsigned long acc_to = std::stoul(str_to, nullptr,10);
+      //unsigned long acc_from = std::stoul(str_from, nullptr,10);
+      //unsigned long acc_to = std::stoul(str_to, nullptr,10);
       if(!str2ul(str_from, res)){
 	// std::cout << "str2ul after from" << std::endl;
 	res = "transfer: invalid from text";

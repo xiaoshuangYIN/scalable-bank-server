@@ -10,6 +10,8 @@
 #include <cerrno>
 #include <cstdlib>
 #include <pqxx/pqxx>
+#include "psql.h"
+
 using namespace pqxx;
 
 int str2db(const std::string&, std::string&);

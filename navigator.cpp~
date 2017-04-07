@@ -33,7 +33,7 @@ void navigator( std::unordered_map<std::string, std::string>& table, connection*
     std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
     insert_element_to_parent(results, std::string("success"), res, table["ref"]);
   }
-  else if(result == false){
+  else {
     std::cout<<"******* ref =  " << table["ref"] << " : " << res << std::endl;
     insert_element_to_parent(results, std::string("error"), res, table["ref"]);
   }

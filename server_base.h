@@ -16,9 +16,9 @@
 #include <unordered_map>
  
 
-//#include "xmlparser.h"
-#include "psql.h"
-#include "navigator.h"
+#include "xmlparser.h"
+//#include "psql.h"
+//#include "navigator.h"
 
 #define PORT "12345"  // the port users will be connecting to
 #define BACKLOG 10     // how many pending connections queue will hold
@@ -28,7 +28,6 @@
 /** struct **/
 struct _threadPara {
   int new_fd;
-  std::vector<std::unordered_map<std::string, std::string>* >* transfers;
   int ref_count;
   connection* C; 
 };

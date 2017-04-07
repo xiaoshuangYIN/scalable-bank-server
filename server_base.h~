@@ -16,7 +16,7 @@
 #include <unordered_map>
  
 
-#include "xmlparser.h"
+//#include "xmlparser.h"
 #include "psql.h"
 #include "navigator.h"
 
@@ -28,7 +28,6 @@
 /** struct **/
 struct _threadPara {
   int new_fd;
-  std::vector<std::unordered_map<std::string, std::string>* >* transfers;
   int ref_count;
   connection* C; 
 };

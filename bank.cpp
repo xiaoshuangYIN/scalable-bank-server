@@ -1,5 +1,5 @@
 #include "bank.h"
-#include "psql.h"
+
 int str2db( std::string& num, std::string& res){
   //convert a string into floating point, return -1 if contain anything but whitespace and valid numeric representation
 

@@ -137,11 +137,8 @@ void* requestThread(void* para){
   recv_content(&sockfd, buff, len);
   
   /* parse */
-  std::vector<std::unordered_map<std::string, std::string>* >* trans 
-    = new std::vector<std::unordered_map<std::string, std::string >* >();
-  std::unordered_map<std::string, std::string> dec;
-  
-  std::string reset = parse(buff, trans, para_t->transfers, para_t->ref_count, dec);
+  //  std::unordered_map<std::string, std::string> dec;
+  std::string reset = parse(buff, para_t->ref_count, para_t->C);
   
   /* reset or not */
   if (reset == "true"){
@@ -161,8 +158,9 @@ void* requestThread(void* para){
   
   /* reponse file name */
   const char* response_file = "xmlResponse1";
+
   /* handle request */
-  bank(*trans, para_t->C, doc, std::string("results"));
+  //bank(*trans, para_t->C, doc, std::string("results"));
   doc.SaveFile(response_file);
 
   /* test */
