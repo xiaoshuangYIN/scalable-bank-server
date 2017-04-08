@@ -1,4 +1,4 @@
-#include "xmlParser.h"
+#include "xmlparser.h"
 
 std::string readXML(const char* filename){
   std::stringstream ss;
@@ -82,50 +82,89 @@ std::string get_reset(TiXmlElement* rootEle){
 
 void write_xml_response(TiXmlNode& parent, bool result, std::string res, std::unordered_map<std::string, std::string>& map){
   if(result == true){
-    std::cout<<"******* ref =  " << map["ref"] << " : " << res << std::endl;
     insert_element_to_parent(parent, std::string("success"), res, map["ref"]);
     }
   else {
-    std::cout<<"******* ref =  " << map["ref"] << " : " << res << std::endl;
     insert_element_to_parent(parent, std::string("error"), res, map["ref"]);
   }
 }
 
-/*
-void parse_query(TiXmlElement* parent){
-  
+std::string match_db_name(std::string str){
+  std::string res;
+  if(str == "to"){
+    res = "account_to";
+  }
+  else if(str == "from"){
+    res = "account_from";
+  }
+  else if(str == "amount"){
+    res = "amount";
+  }
+  else{
+    res = "error";
+    std::cerr<< "invalid query: not tp/from/amount \n";
+  }
+  return res;
+}
+void parse_query(TiXmlElement* parent, int* error, std::string& err_str, pqxx::connection* C){
+  TiXmlElement* firstEle = parent->FirstChildElement();
   TiXmlElement* tranEle;
-  
+
   if(parent){
-  
-    for(tranEle = parent->FirstChildElement(); 
-	 tranEle;
-	 tranEle = parent->NextSiblingElement()){
-       
+    for(tranEle = firstEle; 
+	 tranEle != 0;
+	 tranEle = tranEle->NextSiblingElement()){
+      
       if(std::string(tranEle->Value()) == "and"){
-	 parse_query(tranEle);
-	 printf("and\n");
-       }
+	parse_query(tranEle, error, err_str, C);
+      }
       else if(std::string(tranEle->Value()) == "or"){
-	 parse_query(tranEle);
-	 printf("or\n");
-       }
+	parse_query(tranEle,error, err_str, C);
+      }
       else if(std::string(tranEle->Value()) == "not"){
-	 parse_query(tranEle);
-	 printf("not\n");
-       }
+	parse_query(tranEle,error, err_str,C);
+      }
       else if(std::string(tranEle->Value()) == "greater" || std::string(tranEle->Value()) == "less" || std::string(tranEle->Value()) == "equals"){
-	 printf("greater/less/equals\n");
+	
+	std::string opr = std::string(tranEle->Value());
+	TiXmlAttribute* pAttrib = tranEle->FirstAttribute();
+	std::string target = match_db_name(std::string(pAttrib->Name()));
+	if(target == "error"){
+	  *error = 1;
+	  err_str = "invalid query: not tp/from/amount ";
+	  return;
+	}
+	std::string num = std::string(pAttrib->Value());
+	std::vector<std::unordered_map< std::string, std::string> > res;
+	retrieve_tranf_logic(C, target, opr, num, res);
+	
+	/*
+	std::cout << "**********************\n";
+	printf("size of res = %lu\n", res.size());
+	for(int i = 0; i < res.size(); i++){
+	  std::cout << (res[i])["ref"] << " " <<  (res[i])["account_to"] << " " << (res[i])["account_from"] << " "  <<  (res[i])["amount"] << " " <<  (res[i])["tags"] << " \n";  
+	}
+	std::cout << "***********************\n";
+	*/
       }
       else if(std::string(tranEle->Value()) == "tag"){
-      	 printf("tag\n");
+	const char* info = tranEle->Attribute("info");
+	std::string tag = std::string(info);
+	std::vector<std::unordered_map< std::string, std::string> > res;
+	retrieve_tranf_tag(C, tag, res);
       }
-     }
-  } // end if
-  
+      else{
+	std::cerr << "invalid  query: invalid tag\n";
+	*error = 1;
+	err_str = "invalid query: not tp/from/amount ";
+	return;
+      }
+    }
+  } 
   return;
 }
-*/
+
+
 char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   // request doc
   TiXmlDocument doc;
@@ -136,7 +175,6 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   // resposne doc
   TiXmlDocument rep_doc;
 
-  
   // put the str in the parser
   doc.Parse(buff);
   rootEle = doc.RootElement();
@@ -149,7 +187,12 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   
   // reset
   std::string reset = get_reset(rootEle);
-
+  if(reset == "true"){
+    std::string tb = std::string("account");
+    clear_table(C, tb);
+    tb = std::string("transfer");
+    clear_table(C, tb);
+  }
   // content
   for(tranEle = rootEle->FirstChildElement(); 
       tranEle;
@@ -217,7 +260,14 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
 
     // query
     else if(verb == "query"){
-      //parse_query(tranEle);
+      int error;
+      std::string err_str;
+      parse_query(tranEle, &error, err_str, C);
+      if(error == 1){
+	// TODO: write error response
+	
+      }
+      
       // use it's own write to xml func
       continue;
     }
@@ -235,7 +285,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
       write_xml_response(*results, result, res, map);
     }
   }
-  
+
 
   // write xml to memory buffer
   TiXmlPrinter printer;

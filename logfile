@@ -22,3 +22,38 @@ LOG:  database system was shut down at 2017-04-07 14:30:51 EDT
 LOG:  MultiXact member wraparound protections are now enabled
 LOG:  database system is ready to accept connections
 LOG:  autovacuum launcher started
+FATAL:  database "Sharon" does not exist
+FATAL:  database "beauty/" does not exist
+ERROR:  relation "tranfer" does not exist at character 15
+STATEMENT:  select * from tranfer;
+FATAL:  database "Sharon" does not exist
+ERROR:  type "like" does not exist at character 54
+STATEMENT:  select * from transfer where tags like 'paycheck%'or like '%paycheck' or like '%paycheck%';
+ERROR:  invalid input syntax for type boolean: "%paycheck" at character 55
+STATEMENT:  select * from transfer where tags like 'paycheck%' or '%paycheck' or '%paycheck%';
+ERROR:  invalid input syntax for type boolean: "%paycheck" at character 55
+STATEMENT:  select * from transfer where tags like 'paycheck%' or '%paycheck' or '%paycheck%';
+ERROR:  invalid input syntax for type boolean: "%paycheck" at character 55
+STATEMENT:  select * from transfer where tags like 'paycheck%' or '%paycheck' or '%paycheck%';
+LOG:  received smart shutdown request
+LOG:  autovacuum launcher shutting down
+LOG:  shutting down
+LOG:  database system is shut down
+LOG:  database system was shut down at 2017-04-08 00:26:43 EDT
+LOG:  MultiXact member wraparound protections are now enabled
+LOG:  database system is ready to accept connections
+LOG:  autovacuum launcher started
+ERROR:  syntax error at or near ")" at character 47
+STATEMENT:  SELECT * FROM transfer WHERE account_from=1234);
+ERROR:  syntax error at or near ")" at character 45
+STATEMENT:  SELECT * FROM transfer WHERE account_to=5678);
+ERROR:  syntax error at or near ")" at character 43
+STATEMENT:  SELECT * FROM transfer WHERE amount>100.00);
+ERROR:  syntax error at or near ")" at character 50
+STATEMENT:  SELECT * FROM transfer WHERE account_from = 1234 );
+ERROR:  syntax error at or near ")" at character 48
+STATEMENT:  SELECT * FROM transfer WHERE account_to = 5678 );
+ERROR:  syntax error at or near ")" at character 46
+STATEMENT:  SELECT * FROM transfer WHERE amount > 100.00 );
+ERROR:  type "like" does not exist at character 54
+STATEMENT:  SELECT * FROM transfer WHERE tags LIKE '%food%'  OR  LIKE '%food'  OR  LIKE 'food%'  OR  LIKE 'food'  ;

@@ -132,7 +132,6 @@ double retrieve_bal(connection* C, std::string& str_acc){
   return res;
 }
 
-
 int retrieve_acc(connection* C, std::string& str_acc){
   try{
     std::string init = "SELECT EXISTS (SELECT ACCOUNT_NUM FROM ACCOUNT WHERE ACCOUNT_NUM=";
@@ -156,4 +155,87 @@ int retrieve_acc(connection* C, std::string& str_acc){
     return 0;
   }
   return 1;
+}
+
+void retrieve_tranf_logic(connection* C, std::string& target, std::string& opr, std::string& num, std::vector<std::unordered_map< std::string, std::string> >& res){
+  try{
+    std::string init = "SELECT * FROM transfer WHERE ";
+    std::string opt;
+    if(opr == "greater"){
+      opt = ">";
+    }
+    else if(opr == "less"){
+      opt = "<";
+    }
+    else if(opr == "equals"){
+      opt = "=";
+    }
+    else{
+      std::cerr<<"invalid logical orperator\n";
+      exit(1);
+    }
+    std::string post = " ;";
+    std::string retrieve_q = init + target + " " + opt + " "  + num + " " + post;
+
+    nontransaction N(*C);
+    result R(N.exec(retrieve_q));
+    std::unordered_map<std::string, std::string> map;
+    
+    for(result::const_iterator c = R.begin(); c != R.end(); ++c){
+    
+      map["ref"] = c[0].as<std::string>();
+      map["account_to"] = c[1].as<std::string>();
+      map["account_from"] = c[2].as<std::string>();
+      map["amount"] = c[3].as<std::string>();
+      map["tags"] = c[4].as<std::string>(); 
+      
+      res.push_back(map);
+    }
+  }catch(const std::exception & e){
+    std::cerr << e.what() << std::endl;
+  }
+}
+
+void retrieve_tranf_tag(connection* C, std::string& tag, std::vector<std::unordered_map< std::string, std::string> >& res){
+  try{
+    std::string init = "SELECT * FROM transfer WHERE ";
+    std::string pattern1 = "tags LIKE '%"+ tag +"%' ";
+    std::string pattern2 = "tags  LIKE '%"+ tag +"' ";
+    std::string pattern3 = "tags LIKE '"+ tag +"%' ";
+    std::string pattern4 = "tags  LIKE '"+ tag +"' ";
+    std::string OR = " OR ";
+    std::string post = " ;";
+    std::string retrieve_q = init + pattern1 + OR + pattern2 + OR + pattern3 + OR + pattern4 +post;
+    nontransaction N(*C);
+    result R(N.exec(retrieve_q));
+    std::unordered_map<std::string, std::string> map;
+    
+    for(result::const_iterator c = R.begin(); c != R.end(); ++c){
+    
+      map["ref"] = c[0].as<std::string>();
+      map["account_to"] = c[1].as<std::string>();
+      map["account_from"] = c[2].as<std::string>();
+      map["amount"] = c[3].as<std::string>();
+      map["tags"] = c[4].as<std::string>(); 
+      
+      res.push_back(map);
+    }
+  }catch(const std::exception & e){
+    std::cerr << e.what() << std::endl;
+  }
+}
+
+void clear_table(connection* C, std::string& table){
+  try{
+    work W(*C);
+    std::string sql = "DELETE from " + table + " ;";
+    W.exec( sql.c_str() );
+    W.commit();
+    std::cout << table + " deleted successfully" << std::endl;
+  }
+  catch(const std::exception &e){
+    std::cerr << e.what() << std::endl;
+    exit(1);
+  }
+  return;
 }

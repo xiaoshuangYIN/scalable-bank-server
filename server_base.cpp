@@ -149,15 +149,17 @@ void* requestThread(void* para){
   threadPara* para_t = (threadPara*)para;
   int sockfd = para_t->new_fd;
 
+
   /* receive XML */
   uint64_t len = recv_size_byte(&sockfd);
   char buff[len+8];
   recv_content(&sockfd, buff, len);
+
   
   /* parse */
   int len_rep;
   char* xml_str = parse(buff, para_t->ref_count, para_t->C, &len_rep);
-  printf(" %s \n", xml_str);
+  //printf(" %s \n", xml_str);
 
 
   /* write xml obj into a buffer */
@@ -167,7 +169,8 @@ void* requestThread(void* para){
   /* send */
   send_sock(sockfd, msg, len_rep);
   
-  // free
+
+  /* free */
   free(msg);
   free(xml_str);
   return 0;

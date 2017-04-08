@@ -38,10 +38,6 @@
     <account>1234</account>
   </balance>
   <query ref="4">
-    <or>
-      <equals from="1234"/>
-      <equals to="5678"/>
-    </or>
-    <greater amount="100"/>
-  </query>
+    <equals from="1234"/>
+    </query>
 </transactions>

@@ -131,14 +131,11 @@ uint64_t*  write_response_buffer(uint64_t len_rep, char* content){
   
   // add 64bits int in front of the char array
   uint64_t* msg = (uint64_t*)malloc(8 + len_rep);
-  
   memcpy(msg, &len_big_endien, sizeof(len_big_endien));
   
   // copy the content after the int
   char* msg_str_p = (char*)(msg + 1);
-  
   memcpy(msg_str_p, content, len_rep);
- 
   return msg;
 }
 
@@ -152,10 +149,12 @@ void* requestThread(void* para){
   threadPara* para_t = (threadPara*)para;
   int sockfd = para_t->new_fd;
 
+
   /* receive XML */
   uint64_t len = recv_size_byte(&sockfd);
   char buff[len+8];
   recv_content(&sockfd, buff, len);
+
   
   /* parse */
   int len_rep;
@@ -163,14 +162,15 @@ void* requestThread(void* para){
   printf(" %s \n", xml_str);
 
 
-  /* send the xml file to client*/
+  /* write xml obj into a buffer */
   uint64_t* msg = write_response_buffer(len_rep, xml_str);
   
   
-  // send
+  /* send */
   send_sock(sockfd, msg, len_rep);
   
-  /// free
+
+  /* free */
   free(msg);
   free(xml_str);
   return 0;
