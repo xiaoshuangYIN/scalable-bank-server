@@ -25,5 +25,4 @@ connection* create_connection();
 void create_tables(connection* C);
 void retrieve_tranf_logic(connection* , std::string& , std::string& , std::string& , std::vector<std::unordered_map< std::string, std::string> >& );
 void retrieve_tranf_tag(connection* , std::string& , std::vector<std::unordered_map< std::string, std::string> >&);
-void all_transfers(connection* , std::vector<std::unordered_map< std::string, std::string> >&);
 void clear_table(connection* , std::string& );

@@ -57,3 +57,6 @@ ERROR:  syntax error at or near ")" at character 46
 STATEMENT:  SELECT * FROM transfer WHERE amount > 100.00 );
 ERROR:  type "like" does not exist at character 54
 STATEMENT:  SELECT * FROM transfer WHERE tags LIKE '%food%'  OR  LIKE '%food'  OR  LIKE 'food%'  OR  LIKE 'food'  ;
+ERROR:  syntax error at or near "ls" at character 1
+STATEMENT:  ls
+	;

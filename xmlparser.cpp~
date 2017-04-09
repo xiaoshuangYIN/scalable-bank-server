@@ -134,7 +134,7 @@ void intersect_set(std::vector<std::unordered_map< std::string, std::string> >& 
   for(int i = 0; i < (int)add_list.size(); i++){
     res.push_back(set_a[add_list[i]]);
   }
-  // swap
+  
   set_a = res;
 }
 
@@ -152,11 +152,9 @@ void union_set(std::vector<std::unordered_map< std::string, std::string> >& set_
   }
 }
 
-std::vector<std::unordered_map< std::string, std::string> >  drop_from_set(std::vector<std::unordered_map< std::string, std::string> >& set, std::vector<std::unordered_map< std::string, std::string> >& items_to_drop){
-
-  std::vector<std::unordered_map< std::string, std::string> > res;
-  return res;
-}
+//std::vector<std::unordered_map< std::string, std::string> >  drop_from_set(std::vector<std::unordered_map< std::string, std::string> >& set, std::vector<std::unordered_map< std::string, std::string> >& items_to_drop){
+  
+//}
 
 std::vector<std::vector<std::unordered_map< std::string, std::string> > > parse_query
 (TiXmlElement* parent, int* error, std::string& err_str, pqxx::connection* C){
