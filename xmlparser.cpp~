@@ -80,10 +80,59 @@ std::string get_reset(TiXmlElement* rootEle){
   return reset;
 }
 
+void write_query_xml_response(TiXmlDocument& doc,
+			      std::string reff,
+			      std::vector<std::unordered_map<std::string, std::string> > res)
+{
+  
+  TiXmlNode * results = doc.FirstChild("results");
+  if(results){
+    //make query results element
+    TiXmlElement * q_results = new TiXmlElement("results");
+    // set ref
+    q_results->SetAttribute("ref", reff.c_str());
+    // link results
+    results->LinkEndChild(q_results);
+    // add transfers
+    for(int i = 0; i < res.size(); i++){
+      // make q_transfer elements
+      TiXmlElement * q_transfer = new TiXmlElement("transfer");
+      // link to q_results
+      q_results->LinkEndChild(q_transfer);
+      // add items to q_transfer
+      TiXmlElement * q_from = new TiXmlElement("from");
+      TiXmlText * text_from = new TiXmlText(((res[i])["account_from"]).c_str());
+      q_from->LinkEndChild(text_from);
+      q_transfer->LinkEndChild(q_from);
+      
+      TiXmlElement * q_to = new TiXmlElement("to");
+      TiXmlText * text_to = new TiXmlText(((res[i])["account_to"]).c_str());
+      q_to->LinkEndChild(text_to);
+      q_transfer->LinkEndChild(q_to);
+      
+      TiXmlElement * q_amt = new TiXmlElement("amount");
+      TiXmlText * text_amt = new TiXmlText(((res[i])["amount"]).c_str());
+      q_amt->LinkEndChild(text_amt);
+      q_transfer->LinkEndChild(q_amt);
+     
+      /*
+      if(res.find("tags") != res.end()){
+	TiXmlElement * tags = new TiXmlElement("tags");
+	q_transfer->LinkEndChild("tags");
+	string buf; // Have a buffer string
+	stringstream ss((res[i])["tags"]); // Insert the string into a stream
+	for (std::string each; std::getline(ss, each, split_char); tokens.push_back(each));
+	}
+      */
+      
+    }
+  }
+}
+
 void write_xml_response(TiXmlNode& parent, bool result, std::string res, std::unordered_map<std::string, std::string>& map){
   if(result == true){
     insert_element_to_parent(parent, std::string("success"), res, map["ref"]);
-    }
+  }
   else {
     insert_element_to_parent(parent, std::string("error"), res, map["ref"]);
   }
@@ -116,16 +165,12 @@ void intersect_set(std::vector<std::unordered_map< std::string, std::string> >& 
   // put set_b's items in the hash table
   for(int i = 0; (int)i < set_b.size(); i++){
     map[(set_b[i])["ref"]] = set_b[i];
-    std::cout<<"insert " << (set_b[i])["ref"] << std::endl;
-    printf("map size: %lu\n", map.size());
   }
 
   // drop set_a's item is it is not in the hash table
-  printf("origina set size: %lu\n", set_a.size());
   for(int i = 0; (int)i < set_a.size(); i++){
     if(map.find((set_a[i])["ref"]) != map.end()) {// found
       add_list.push_back(i);
-      std::cout<<"keep " << (set_a[i])["ref"] << std::endl;
     }
   }
   
@@ -163,8 +208,7 @@ std::vector<std::unordered_map< std::string, std::string> >  drop_from_set(std::
   }
   // push the items not on map to result
   for(int i = 0; (int)i < set.size(); i++){
-    if(map.find((set[i])["ref"]) == map.end()){
-      // not found
+    if(map.find((set[i])["ref"]) == map.end()){// not found
       res.push_back(set[i]);
     }
   }
@@ -279,6 +323,7 @@ std::vector<std::unordered_map<std::string, std::string> > combine_to_one_vector
 }
 
 char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
+  std::cout<< "************** request **************\n";
   // request doc
   TiXmlDocument doc;
   TiXmlElement* tranEle = 0;
@@ -301,6 +346,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   // reset
   std::string reset = get_reset(rootEle);
   if(reset == "true"){
+    std::cout<<"reset = true\n";
     std::string tb = std::string("account");
     clear_table(C, tb);
     tb = std::string("transfer");
@@ -323,14 +369,16 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
     map["verb"] = verb;    
 
     // ref
+    std::string reff;
     if(tranEle->Attribute("ref")){
-      map["ref"] = std::string(tranEle->Attribute("ref"));
+      reff = std::string(tranEle->Attribute("ref"));
     }
     else{
-      std::string reff = "given" + std::to_string(ref_count);
+      reff = "given" + std::to_string(ref_count);
       ref_count++;
-      map["ref"] = reff;
     }
+    map["ref"] = reff;
+    
 
     // create
     if(verb == "create"){
@@ -378,8 +426,12 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
       std::string err_str;
       std::vector<std::vector<std::unordered_map< std::string, std::string> > > result
 	= parse_query(tranEle, &error, err_str, C);
-      
+      std::string ref = tranEle;
+      if(error == 1){
+	// TODO: write error response
+      }
       //test
+      /*
       for(int i = 0; i < result.size(); i++){
 	std::cout<<"******** before combine *********\n";
 	for(int j = 0; j < result[i].size(); j++){
@@ -390,7 +442,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
 		    << " " <<  (result[i][j])["tags"] << " \n";  
 	}
       }
-      
+      */
       std::vector<std::unordered_map< std::string, std::string> > ret;
       if(result.size() > 0){
 	ret = result[0];// init
@@ -398,22 +450,22 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
 	  intersect_set(ret, result[i]);
 	}
       }
-      
       //test
+      /*
       std::cout<<"******** after combine **********\n";
       for(int i = 0; i < (int)ret.size(); i++){
-	std::cout << " " << (res[i])["ref"]
+	std::cout << " " << (ret[i])["ref"]
 		  << " " << (ret[i])["account_to"]
 		  << " " << (ret[i])["account_from"]
 		  << " " << (ret[i])["amount"] 
 		  << " " << (ret[i])["tags"] << " \n";  
       }
       std::cout<<"*******************\n";
+      */
       
-      if(error == 1){
-	// TODO: write error response
-      }
-      // use it's own write to xml func
+      // wirte response base on ret
+      // make results
+      write_query_xml_response(rep_doc, reff, ret);
       continue;
     }
     
