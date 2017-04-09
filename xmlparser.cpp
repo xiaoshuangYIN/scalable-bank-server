@@ -155,6 +155,19 @@ void union_set(std::vector<std::unordered_map< std::string, std::string> >& set_
 std::vector<std::unordered_map< std::string, std::string> >  drop_from_set(std::vector<std::unordered_map< std::string, std::string> >& set, std::vector<std::unordered_map< std::string, std::string> >& items_to_drop){
 
   std::vector<std::unordered_map< std::string, std::string> > res;
+  // put items_to_drop on map
+  std::unordered_map<std::string, std::unordered_map<std::string, std::string> > map;
+  // put set_a's items in the hash table
+  for(int i = 0; (int)i < items_to_drop.size(); i++){
+    map[(items_to_drop[i])["ref"]] = items_to_drop[i];
+  }
+  // push the items not on map to result
+  for(int i = 0; (int)i < set.size(); i++){
+    if(map.find((set[i])["ref"]) == map.end()){
+      // not found
+      res.push_back(set[i]);
+    }
+  }
   return res;
 }
 
@@ -209,7 +222,7 @@ std::vector<std::vector<std::unordered_map< std::string, std::string> > > parse_
 	}
 	std::vector<std::unordered_map< std::string, std::string> > transfers;
 	all_transfers(C, transfers);
-      //after_not_set = drop_from_set(transfers, not_set);
+	after_not_set = drop_from_set(transfers, not_set);
 	res.push_back(after_not_set);
       }// not
       
@@ -227,15 +240,6 @@ std::vector<std::vector<std::unordered_map< std::string, std::string> > > parse_
 	std::vector<std::unordered_map< std::string, std::string> > transfers;
 	retrieve_tranf_logic(C, target, opr, num, transfers);
 	res.push_back(transfers);
-	
-	/*
-	std::cout << "**********************\n";
-	printf("size of res = %lu\n", res.size());
-	for(int i = 0; i < res.size(); i++){
-	  std::cout << (res[i])["ref"] << " " <<  (res[i])["account_to"] << " " << (res[i])["account_from"] << " "  <<  (res[i])["amount"] << " " <<  (res[i])["tags"] << " \n";  
-	}
-	std::cout << "***********************\n";
-	*/
       }
 
       else if(std::string(tranEle->Value()) == "tag"){
@@ -398,7 +402,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
       //test
       std::cout<<"******** after combine **********\n";
       for(int i = 0; i < (int)ret.size(); i++){
-	std::cout << " " << (res[i])["ref"]
+	std::cout << " " << (ret[i])["ref"]
 		  << " " << (ret[i])["account_to"]
 		  << " " << (ret[i])["account_from"]
 		  << " " << (ret[i])["amount"] 

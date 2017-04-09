@@ -42,8 +42,8 @@
       <equals amount="100.34"/>
       <equals amount="345.67"/>
     </or>
-    <not>
-      <equals amount="100.34"/>
-    </not>
+    <or>
+      <equals amount="9568.34"/>
+    </or>
   </query>
 </transactions>
