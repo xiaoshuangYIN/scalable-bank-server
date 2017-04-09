@@ -80,6 +80,13 @@ std::string get_reset(TiXmlElement* rootEle){
   return reset;
 }
 
+void add_tag_to_tags(TiXmlElement& tags, std::string buf){
+  TiXmlElement * tag = new TiXmlElement("tag");
+  TiXmlText * tag_text = new TiXmlText(buf.c_str());
+  tag->LinkEndChild(tag_text);
+  tags.LinkEndChild(tag);
+}
+
 void write_query_xml_response(TiXmlDocument& doc,
 			      std::string reff,
 			      std::vector<std::unordered_map<std::string, std::string> > res)
@@ -115,16 +122,14 @@ void write_query_xml_response(TiXmlDocument& doc,
       q_amt->LinkEndChild(text_amt);
       q_transfer->LinkEndChild(q_amt);
      
-      /*
-      if(res.find("tags") != res.end()){
+      if((res[i]).find("tags") != res[i].end()){
 	TiXmlElement * tags = new TiXmlElement("tags");
-	q_transfer->LinkEndChild("tags");
-	string buf; // Have a buffer string
-	stringstream ss((res[i])["tags"]); // Insert the string into a stream
-	for (std::string each; std::getline(ss, each, split_char); tokens.push_back(each));
+	q_transfer->LinkEndChild(tags);
+	std::string buf; // Have a buffer string
+	std::stringstream ss((res[i])["tags"]); // Insert the string into a stream
+	for (; std::getline(ss, buf, ','); add_tag_to_tags(*tags, buf)){
 	}
-      */
-      
+      }
     }
   }
 }
