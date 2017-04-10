@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transactions>
+  <create ref="c1">
+    <account>1234</account>
+    <balance>5001.10</balance>
+  </create>
+  <create ref="c2">
+    <account>5678</account>
+  </create>
+  <create ref="c3">
+    <account>4321</account>
+    <balance>800000</balance>
+  </create>
+  <create ref="c4">
+    <account>8765</account>
+  </create>
+
+  <create ref="c5">
+  </create>
+  <create ref="c6">
+    <account></account>
+  </create>
+  <create ref="c7">
+    <account>  8b5c</account>
+  </create>
+  <create ref="c8">
+    <account>1000</account>
+    <balance></balance>
+  </create>
+  <create ref="c9">
+    <account>1001</account>
+    <balance>bh45t</balance>
+  </create>
+  <create ref="c0">
+    <account>-1002</account>
+  </create>
+
+  <transfer ref="0">
+    <from>1000</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="1">
+    <to>1234</to>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="2">
+    <to>1234</to>
+    <from>1000</from>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="3">
+    <to>b6</to>
+    <from>1000</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="4">
+    <to>1234</to>
+    <from>wt</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="5">
+    <to>1234</to>
+    <from>1000</from>
+    <amount>5df</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="1">
+    <to>1003</to>
+    <from>1000</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="1">
+    <to>1234</to>
+    <from>1004</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="1">
+    <to>1234</to>
+    <from>1000</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <balance ref="xyz">
+    <account>11234</account>
+  </balance>
+  <balance ref="wez">
+  </balance>

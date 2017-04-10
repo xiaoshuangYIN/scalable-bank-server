@@ -108,7 +108,7 @@ uint64_t recv_size_byte(int* sockfd_p){
     exit(1);
   }
   uint64_t len = ntohll(*len_p);
-  //printf("server: received '%llu'\n", len);
+  printf("server: received '%llu'\n", len);
   free(len_p);
   return len;
 }
@@ -141,7 +141,7 @@ uint64_t*  write_response_buffer(uint64_t len_rep, char* content){
 
 void send_sock(int sockfd, uint64_t* msg, int len){
   int write_bytes = write(sockfd, (const void*)msg, 8+len);
-  //printf("len send: '%d'\n",write_bytes);
+  printf("len send: '%d'\n",write_bytes);
 }
 
 

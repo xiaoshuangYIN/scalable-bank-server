@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
   buff_p[len_rep] = '\0';
-  printf("%s\n", buff_p);
+  printf("client received : \n %s\n", buff_p);
   /* close */
   close(sockfd);
   free(msg);

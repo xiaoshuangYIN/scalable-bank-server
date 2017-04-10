@@ -122,12 +122,6 @@ bool create(connection *C, std::unordered_map<std::string, std::string> & t, std
 	return false;
       }
     }
-    /* check for duplicate account number */
-    if(retrieve_acc(C, str_acc)){
-      res = "Already exists";
-      return false;
-    }
-    
     std::string::size_type minus_bal = str_bal.find("-");
     if(minus_bal != std::string::npos){
       //std::cerr << "Invalid: initial balance must be non-negative" << std::endl;

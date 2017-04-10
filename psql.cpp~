@@ -225,6 +225,28 @@ void retrieve_tranf_tag(connection* C, std::string& tag, std::vector<std::unorde
   }
 }
 
+void all_transfers(connection* C, std::vector<std::unordered_map< std::string, std::string> >& res){
+  try{
+    std::string retrieve_q = "SELECT * FROM transfer;";
+    nontransaction N(*C);
+    result R(N.exec(retrieve_q));
+    std::unordered_map<std::string, std::string> map;
+    
+    for(result::const_iterator c = R.begin(); c != R.end(); ++c){
+    
+      map["ref"] = c[0].as<std::string>();
+      map["account_to"] = c[1].as<std::string>();
+      map["account_from"] = c[2].as<std::string>();
+      map["amount"] = c[3].as<std::string>();
+      map["tags"] = c[4].as<std::string>(); 
+      
+      res.push_back(map);
+    }
+  }catch(const std::exception & e){
+    std::cerr << e.what() << std::endl;
+  }
+}
+
 void clear_table(connection* C, std::string& table){
   try{
     work W(*C);

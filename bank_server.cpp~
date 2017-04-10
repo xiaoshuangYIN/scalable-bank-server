@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){
 
   sigaction(&sa);
   
-  //printf("server: waiting for connections...\n");
+  printf("server: waiting for connections...\n");
   
   while(1){
     new_fd = accept_sock(sockfd, their_addr);

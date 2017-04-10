@@ -6,7 +6,7 @@ connection* create_connection(){
     //param: db name, username, user password
     connection* C = new connection("dbname=bank user=Sharon");
     if(C->is_open()){
-      std::cout << "open db successfully: " << C->dbname() << std::endl;
+      //std::cout << "open db successfully: " << C->dbname() << std::endl;
     }
     else{
       std::cout << "cannot open db" << std::endl;
@@ -30,7 +30,7 @@ void create_tables(connection* C){
     W_account.exec(drop_account);
     W_account.exec(create_account);
     W_account.commit();
-    std::cout << "ACCOUNT created" << std::endl;
+    //std::cout << "ACCOUNT created" << std::endl;
     
     std::string transfer("TRANSFER");
     std::string create_transfer = "CREATE TABLE " + transfer + "(" + "REF TEXT, ACCOUNT_TO BIGINT NOT NULL, ACCOUNT_FROM BIGINT NOT NULL, AMOUNT DECIMAL(17,2), TAGS TEXT" + ")";
@@ -39,7 +39,7 @@ void create_tables(connection* C){
     W_transfer.exec(drop_transfer);
     W_transfer.exec(create_transfer);
     W_transfer.commit();
-    std::cout << "TRANSFER created" << std::endl;
+    //std::cout << "TRANSFER created" << std::endl;
   }
   catch(const std::exception &e){
     std::cerr << e.what() << std::endl;
@@ -253,7 +253,7 @@ void clear_table(connection* C, std::string& table){
     std::string sql = "DELETE from " + table + " ;";
     W.exec( sql.c_str() );
     W.commit();
-    std::cout << table + " deleted successfully" << std::endl;
+    //std::cout << table + " deleted successfully" << std::endl;
   }
   catch(const std::exception &e){
     std::cerr << e.what() << std::endl;

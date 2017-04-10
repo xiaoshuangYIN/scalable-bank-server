@@ -328,7 +328,7 @@ std::vector<std::unordered_map<std::string, std::string> > combine_to_one_vector
 }
 
 char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
-  std::cout<< "************** request **************\n";
+  //std::cout<< "************** request **************\n";
   // request doc
   TiXmlDocument doc;
   TiXmlElement* tranEle = 0;
@@ -351,7 +351,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   // reset
   std::string reset = get_reset(rootEle);
   if(reset == "true"){
-    std::cout<<"reset = true\n";
+    //std::cout<<"reset = true\n";
     std::string tb = std::string("account");
     clear_table(C, tb);
     tb = std::string("transfer");
@@ -495,7 +495,7 @@ char*  parse(char* buff, int ref_count, pqxx::connection* C, int* len){
   *len = printer.Size();
   char* xml_rep = (char*) malloc((*len) * sizeof(char));
   memcpy(xml_rep, printer.CStr(), (*len));
-  printf("xml parser: size = %d\n", *len);
+  //printf("xml parser: size = %d\n", *len);
   return xml_rep;
 }
 

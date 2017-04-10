@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transactions reset = "true">
+  <create ref="c1">
+    <account>1234</account>
+    <balance>501.20</balance>
+  </create>
+  <create ref="c2">
+    <account>5678</account>
+  </create>
+  <create ref="c3">
+    <account>4321</account>
+    <balance>503400.08</balance>
+  </create>
+  <create ref="c4">
+    <account>1001</account>
+    <balance>5435.21</balance>
+  </create>
+  <transfer ref="1">
+    <to>1234</to>
+    <from>4321</from>
+    <amount>9568.34</amount>
+    <tag>paycheck</tag>
+    <tag>monthly</tag>
+  </transfer>
+  <transfer ref="2">
+    <from>1234</from>
+    <to>1001</to>
+    <amount>100.34</amount>
+    <tag>food</tag>
+  </transfer>
+  <transfer ref="3">
+    <from>4321</from>
+    <to>1001</to>
+    <amount>20000.88</amount>
+    <tag>laptop</tag>
+  </transfer>
+  <transfer ref="4">
+    <from>4321</from>
+    <to>1001</to>
+    <amount>2000.88</amount>
+    <tag>smartphone</tag>
+  </transfer>
+  <transfer ref="5">
+    <from>1234</from>
+    <to>5678</to>
+    <amount>-245.67</amount>
+    <tag>deposit</tag>
+  </transfer>
+  <transfer ref="6">
+    <from>1234</from>
+    <to>5678</to>
+    <amount>45.99</amount>
+    <tag>grocery</tag>
+  </transfer>
+  <balance ref="asd">
+    <account>1234</account>
+  </balance>
+  <balance ref="xyz">
+    <account>5678</account>
+  </balance>
+  <balance ref="jkl">
+    <account>1001</account>
+  </balance>
+  <query ref="7">
+    <or>
+      <equals from="1234"/>
+      <equals to="5678"/>
+    </or>
+    <greater amount="100"/>
+  </query>
+  <query ref="8">
+    <equals from="5678"/>
+    <equals to="5678"/>
+    <greater amount="100"/>
+  </query>
+  <query ref="9">
+    <and>
+      <equals from="4321"/>
+      <equals to="1001"/>
+    </and>
+    <greater amount="20000"/>
+  </query>
+  <query ref="0">
+    <or>
+      <equals from="1234"/>
+      <equals to="5678"/>
+      <and>
+	<less from="1234"/>
+	<equals amount ="45.99"/>
+      </and>
+    </or>
+    <less amount="1000"/>
+  </query>
+</transactions>
